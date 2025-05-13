@@ -1,0 +1,860 @@
+{
+	"info": {
+		"_postman_id": "9d853a10-d715-411e-84da-0c6fa1064016",
+		"name": "LEAP test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5313384",
+		"_collection_link": "https://leap-dev-6342.postman.co/workspace/LEAP~025e20d4-9d01-498b-a110-71c713e8db84/collection/5313384-9d853a10-d715-411e-84da-0c6fa1064016?action=share&source=collection_link&creator=5313384"
+	},
+	"item": [
+		{
+			"name": "CRUD Flow",
+			"item": [
+				{
+					"name": "Create employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"  type: \"object\",",
+									"  required: [",
+									"    \"firstName\",",
+									"    \"lastName\",",
+									"    \"dateOfBirth\",",
+									"    \"startDate\",",
+									"    \"department\",",
+									"    \"jobTitle\",",
+									"    \"email\",",
+									"    \"mobile\",",
+									"    \"address\",",
+									"    \"baseSalary\",",
+									"    \"_id\"",
+									"  ],",
+									"  properties: {",
+									"    firstName: { type: \"string\" },",
+									"    lastName: { type: \"string\" },",
+									"    dateOfBirth: { type: \"string\", format: \"date\" },",
+									"    startDate: { type: \"string\", format: \"date\" },",
+									"    department: { type: \"string\" },",
+									"    jobTitle: { type: \"string\" },",
+									"    email: { type: \"string\", format: \"email\" },",
+									"    mobile: { type: \"string\", pattern: \"^\\\\d{10}$\" },",
+									"    address: { type: \"string\" },",
+									"    baseSalary: { type: \"number\" },",
+									"    _id: { type: \"string\" }",
+									"  }",
+									"};",
+									"",
+									"pm.test(\"Response schema is valid\", function () {",
+									"  pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"const id = pm.response.json()._id;",
+									"pm.environment.set(\"employeeId\", id);",
+									"",
+									"pm.test(\"Response status code is 201\", function () {",
+									"    pm.expect(pm.response.code).to.equal(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json(); ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.include.all.keys(",
+									"        'firstName', 'lastName', 'dateOfBirth', 'startDate', 'department', ",
+									"        'jobTitle', 'email', 'mobile', 'address', 'baseSalary', '_id'",
+									"    );",
+									"});",
+									"",
+									"",
+									"pm.test(\"Email is in a valid format\", function () {",
+									"  const responseData = pm.response.json();",
+									"  pm.expect(responseData.email).to.match(/^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)*(\\.[a-z]{2,})$/, \"Email format is not valid\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Mobile number is in a valid format\", function () {",
+									"    const responseData = pm.response.json();  ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.mobile).to.match(/^\\d{10}$/);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Base salary is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();  ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.baseSalary).to.be.a('number');",
+									"    pm.expect(responseData.baseSalary).to.be.at.least(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"{{firstName}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"dateOfBirth\": \"{{dateOfBirth}}\",\n  \"startDate\": \"{{startDate}}\",\n  \"department\": \"{{department}}\",\n  \"jobTitle\": \"{{jobTitle}}\",\n  \"email\": \"{{email}}\",\n  \"mobile\": \"{{mobile}}\",\n  \"address\": \"{{address}}\",\n  \"baseSalary\": {{baseSalary}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get employee by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"      \"_id\": { \"type\": \"string\" },",
+									"      \"firstName\": { \"type\": \"string\" },",
+									"      \"lastName\": { \"type\": \"string\" },",
+									"      \"dateOfBirth\": { \"type\": \"string\", \"format\": \"date\" },",
+									"      \"startDate\": { \"type\": \"string\", \"format\": \"date\" },",
+									"      \"department\": { \"type\": \"string\" },",
+									"      \"jobTitle\": { \"type\": \"string\" },",
+									"      \"email\": { \"type\": \"string\", \"format\": \"email\" },",
+									"      \"mobile\": { \"type\": \"string\", \"pattern\": \"^\\\\d{10}$\" },",
+									"      \"address\": { \"type\": \"string\" },",
+									"      \"baseSalary\": { \"type\": \"integer\" }",
+									"    },",
+									"  \"required\": [",
+									"    \"_id\",",
+									"    \"firstName\",",
+									"    \"lastName\",",
+									"    \"dateOfBirth\",",
+									"    \"startDate\",",
+									"    \"department\",",
+									"    \"jobTitle\",",
+									"    \"email\",",
+									"    \"mobile\",",
+									"    \"address\",",
+									"    \"baseSalary\"",
+									"  ]",
+									"};",
+									"",
+									"pm.test(\"Response schema is valid\", function () {",
+									"  pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.include.all.keys('_id', 'firstName', 'lastName', 'dateOfBirth', 'startDate', 'department', 'jobTitle', 'email', 'mobile', 'address', 'baseSalary');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Email is in a valid email format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.email).to.be.a('string');",
+									"    pm.expect(responseData.email).to.match(/\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b/);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Mobile number is in a valid format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.mobile).to.match(/^\\d{10}$/);",
+									"});",
+									"",
+									"pm.test(\"Base salary is a non-negative integer\", function () {",
+									"  const responseData = pm.response.json();",
+									"    pm.expect(responseData.baseSalary).to.be.a('number').and.to.be.at.least(0);    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee/{{employeeId}}",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"startDate\": \"2020-05-01\",\n    \"department\": \"Engineering\",\n    \"jobTitle\": \"Software Engineer\",\n    \"email\": \"john.doe@example.com\",\n    \"mobile\": \"0400000000\",\n    \"address\": \"123 Street, Sydney\",\n    \"baseSalary\": 120000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee/{{employeeId}}",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get the updated employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"      \"_id\": { \"type\": \"string\" },",
+									"      \"firstName\": { \"type\": \"string\" },",
+									"      \"lastName\": { \"type\": \"string\" },",
+									"      \"dateOfBirth\": { \"type\": \"string\", \"format\": \"date\" },",
+									"      \"startDate\": { \"type\": \"string\", \"format\": \"date\" },",
+									"      \"department\": { \"type\": \"string\" },",
+									"      \"jobTitle\": { \"type\": \"string\" },",
+									"      \"email\": { \"type\": \"string\", \"format\": \"email\" },",
+									"      \"mobile\": { \"type\": \"string\", \"pattern\": \"^\\\\d{10}$\" },",
+									"      \"address\": { \"type\": \"string\" },",
+									"      \"baseSalary\": { \"type\": \"integer\" }",
+									"    },",
+									"  \"required\": [",
+									"    \"_id\",",
+									"    \"firstName\",",
+									"    \"lastName\",",
+									"    \"dateOfBirth\",",
+									"    \"startDate\",",
+									"    \"department\",",
+									"    \"jobTitle\",",
+									"    \"email\",",
+									"    \"mobile\",",
+									"    \"address\",",
+									"    \"baseSalary\"",
+									"  ]",
+									"};",
+									"",
+									"pm.test(\"Response schema is valid\", function () {",
+									"  pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.include.all.keys('_id', 'firstName', 'lastName', 'dateOfBirth', 'startDate', 'department', 'jobTitle', 'email', 'mobile', 'address', 'baseSalary');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Email is in a valid email format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.email).to.be.a('string');",
+									"    pm.expect(responseData.email).to.match(/\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b/);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Mobile number is in a valid format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.mobile).to.match(/^\\d{10}$/);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee/{{employeeId}}",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the updated employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee/{{employeeId}}",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get deleted employee (must fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Employee is not found (404)\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee/{{employeeId}}",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Multiple Employees - Create",
+			"item": [
+				{
+					"name": "Create employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const schema = {",
+									"  type: \"object\",",
+									"  required: [",
+									"    \"firstName\",",
+									"    \"lastName\",",
+									"    \"dateOfBirth\",",
+									"    \"startDate\",",
+									"    \"department\",",
+									"    \"jobTitle\",",
+									"    \"email\",",
+									"    \"mobile\",",
+									"    \"address\",",
+									"    \"baseSalary\",",
+									"    \"_id\"",
+									"  ],",
+									"  properties: {",
+									"    firstName: { type: \"string\" },",
+									"    lastName: { type: \"string\" },",
+									"    dateOfBirth: { type: \"string\", format: \"date\" },",
+									"    startDate: { type: \"string\", format: \"date\" },",
+									"    department: { type: \"string\" },",
+									"    jobTitle: { type: \"string\" },",
+									"    email: { type: \"string\", format: \"email\" },",
+									"    mobile: { type: \"string\", pattern: \"^\\\\d{10}$\" },",
+									"    address: { type: \"string\" },",
+									"    baseSalary: { type: \"number\" },",
+									"    _id: { type: \"string\" }",
+									"  }",
+									"};",
+									"",
+									"pm.test(\"Response schema is valid\", function () {",
+									"  pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test(\"Response status code is 201\", function () {",
+									"  pm.expect(pm.response.to.have.status(201));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.include.all.keys(",
+									"        'firstName',",
+									"        'lastName',",
+									"        'dateOfBirth',",
+									"        'startDate',",
+									"        'department',",
+									"        'jobTitle',",
+									"        'email',",
+									"        'mobile',",
+									"        'address',",
+									"        'baseSalary',",
+									"        '_id'",
+									"    );",
+									"});",
+									"",
+									"",
+									"pm.test(\"Email is in a valid format\", function () {",
+									"  const responseData = pm.response.json();",
+									"",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.email).to.match(/\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b/i, \"Email is not in a valid format\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Mobile number is in a valid format\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('object');",
+									"  pm.expect(responseData.mobile).to.match(/^\\d{10}$/);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Base salary is a non-negative integer\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.baseSalary).to.be.a('number');",
+									"    pm.expect(responseData.baseSalary).to.be.at.least(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"{{firstName}}\",\n  \"lastName\": \"{{lastName}}\",\n  \"dateOfBirth\": \"{{dateOfBirth}}\",\n  \"startDate\": \"{{startDate}}\",\n  \"department\": \"{{department}}\",\n  \"jobTitle\": \"{{jobTitle}}\",\n  \"email\": \"{{email}}\",\n  \"mobile\": \"{{mobile}}\",\n  \"address\": \"{{address}}\",\n  \"baseSalary\": {{baseSalary}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Multiple Employees - Verify",
+			"item": [
+				{
+					"name": "Get all employees",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const singleEmployeeSchema = {",
+									"  type: \"object\",",
+									"  required: [",
+									"    \"_id\", \"firstName\", \"lastName\", \"dateOfBirth\", \"startDate\",",
+									"    \"department\", \"jobTitle\", \"email\", \"mobile\", \"address\", \"baseSalary\"",
+									"  ],",
+									"  properties: {",
+									"    _id: { type: \"string\" },",
+									"    firstName: { type: \"string\" },",
+									"    lastName: { type: \"string\" },",
+									"    dateOfBirth: { type: \"string\", format: \"date\" },",
+									"    startDate: { type: \"string\", format: \"date\" },",
+									"    department: { type: \"string\" },",
+									"    jobTitle: { type: \"string\" },",
+									"    email: { type: \"string\", format: \"email\" },",
+									"    mobile: { type: \"string\", pattern: \"^\\\\d{10}$\" },",
+									"    address: { type: \"string\" },",
+									"    baseSalary: { type: \"integer\" }",
+									"  }",
+									"};",
+									"",
+									"const responseData = pm.response.json();",
+									"",
+									"pm.test(\"Each employee item matches schema\", () => {",
+									"  responseData.forEach(emp => {",
+									"    pm.expect(emp).to.have.jsonSchema(singleEmployeeSchema);",
+									"  });",
+									"});",
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array').that.is.not.empty;",
+									"    ",
+									"    const requiredFields = [\"_id\", \"firstName\", \"lastName\", \"dateOfBirth\", \"startDate\", \"department\", \"jobTitle\", \"email\", \"mobile\", \"address\", \"baseSalary\"];",
+									"    ",
+									"    responseData.forEach(function(employee) {",
+									"        requiredFields.forEach(function(field) {",
+									"            pm.expect(employee).to.have.property(field);",
+									"        });",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Email is in a valid format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    responseData.forEach(function(employee) {",
+									"        pm.expect(employee.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/, \"Email format is not valid\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Mobile number is in a valid format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('array').that.is.not.empty;",
+									"    ",
+									"    responseData.forEach(function(employee) {",
+									"        pm.expect(employee.mobile).to.match(/^\\d{10}$/);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Base salary is a non-negative integer\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData).to.be.an('array');",
+									"  responseData.forEach(function(employee) {",
+									"    pm.expect(employee.baseSalary).to.be.a('number').and.to.be.at.least(0);",
+									"  });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Negative Tests",
+			"item": [
+				{
+					"name": "Missing Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const body = JSON.parse(request.data);",
+									"pm.test(\"Fail if email is missing\", function () {",
+									"    pm.expect(body.email, \"Email should not be empty\").to.not.be.undefined;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"mobile\": \"0435286001\",\n  \"baseSalary\": 85000\n}"
+						},
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Email Format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const email = JSON.parse(request.data).email;",
+									"const isValid = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);",
+									"pm.test(\"Fail if email format is invalid\", () => {",
+									"    pm.expect(isValid, `Invalid email: ${email}`).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"invalidemail.com\",\n  \"mobile\": \"0435286001\",\n  \"baseSalary\": 85000\n}"
+						},
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Mobile Number",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const mobile = JSON.parse(request.data).mobile;",
+									"const isValidMobile = /^\\d{10}$/.test(mobile);",
+									"pm.test(\"Fail if mobile is not 10 digits\", () => {",
+									"    pm.expect(isValidMobile, `Mobile was: ${mobile}`).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"test@example.com\",\n  \"mobile\": \"123\",\n  \"baseSalary\": 85000\n}"
+						},
+						"url": {
+							"raw": "https://crudcrud.com/api/{{crudId}}/employee",
+							"protocol": "https",
+							"host": [
+								"crudcrud",
+								"com"
+							],
+							"path": [
+								"api",
+								"{{crudId}}",
+								"employee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

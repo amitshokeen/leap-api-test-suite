@@ -1,0 +1,14 @@
+  [
+      {
+    "firstName": "Donald",
+    "lastName": "Smith",
+    "dateOfBirth": "2005-11-21",
+    "startDate": "2024-06-15",
+    "department": "Sales",
+    "jobTitle": "Manager",
+    "email": "donald.smith@example.com",
+    "mobile": "0433333003",
+    "address": "7 Nice Street, Sydney",
+    "baseSalary": 200002
+  }
+]
